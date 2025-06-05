@@ -35,12 +35,22 @@ class BaseMMVae(ABC, nn.Module):
 
 
     def reparameterize(self, mu, logvar):
+        """
+        Standard reparameterization trick to sample from a Gaussian distribution
+        """
         std = logvar.mul(0.5).exp_()
         eps = Variable(std.data.new(std.size()).normal_())
         return eps.mul(std).add_(mu)
 
 
     def set_fusion_functions(self):
+        """
+        1. self.modality_fusion: The function to combine posteriors from a subset of modalities
+        2. self.fusion_condition: A function that determines if a subset's fused posterior should 
+            be included in the final joint posterior calculation. For 'joint_elbo' (MoPoE), 
+            this is self.fusion_condition_joint, which always returns True, meaning all subset posteriors are considered. 
+        3. self.calc_joint_divergence: The function to calculate the KL divergence for the joint posterior.
+        """
         weights = utils.reweight_weights(torch.Tensor(self.flags.alpha_modalities));
         self.weights = weights.to(self.flags.device);
         if self.flags.modality_moe:
@@ -169,7 +179,7 @@ class BaseMMVae(ABC, nn.Module):
         for m, m_key in enumerate(self.modalities.keys()):
             if m_key in input_batch.keys():
                 i_m = input_batch[m_key];
-                l = self.encoders[m_key](i_m)
+                l = self.encoders[m_key](i_m) # l is a list with [style_mu, style_logvar, content_mu, content_logvar]
                 latents[m_key + '_style'] = l[:2]
                 latents[m_key] = l[2:]
             else:
@@ -179,10 +189,21 @@ class BaseMMVae(ABC, nn.Module):
 
 
     def inference(self, input_batch, num_samples=None):
+        """
+        MoPoE logic for combining posteriors
+        Inference step of the model. It encodes the input batch and computes the latent representations.
+
+        s_key is the key for the subset, e.g., '', 'm0', 'm1', 'm0_m1', 'm1_m2' or 'm1_m2_m3'
+        Collects mus_subset and logvars_subset from enc_mods for modalities present in input_batch AND in the current subset.
+        self.modality_fusion: Fuses the content/class posteriors from this subset.
+
+        Joint Posterior (MoPoE logic): The collected mus and logvars (which are PoEs from each subset) 
+        are then combined using self.moe_fusion. This creates the "Mixture of Products of Experts."
+        """
         if num_samples is None:
             num_samples = self.flags.batch_size;
         latents = dict();
-        enc_mods = self.encode(input_batch);
+        enc_mods = self.encode(input_batch); # enc_mods is a dict with keys 'm1_style', 'm1', 'm2_style', 'm2', etc. Get unimodal latent parameters
         latents['modalities'] = enc_mods;
         mus = torch.Tensor().to(self.flags.device);
         logvars = torch.Tensor().to(self.flags.device);
