@@ -81,7 +81,9 @@ class BaseMMVae(ABC, nn.Module):
                                                  weights,
                                                  normalization=self.flags.batch_size);
         divs = dict();
-        divs['joint_divergence'] = div_measures[0]; divs['individual_divs'] = div_measures[1]; divs['dyn_prior'] = None;
+        divs['joint_divergence'] = div_measures[0];
+        divs['individual_divs'] = div_measures[1];
+        divs['dyn_prior'] = None;
         return divs;
 
 
@@ -148,12 +150,12 @@ class BaseMMVae(ABC, nn.Module):
 
 
     def forward(self, input_batch):
-        latents = self.inference(input_batch);
+        latents = self.inference(input_batch); # Gets the joint posterior parameters.
         results = dict();
         results['latents'] = latents;
         results['group_distr'] = latents['joint'];
         class_embeddings = self.reparameterize(latents['joint'][0],
-                                                latents['joint'][1]);
+                                                latents['joint'][1]); # Samples from the joint content/class latent space.
         div = self.calc_joint_divergence(latents['mus'],
                                          latents['logvars'],
                                          latents['weights']);
@@ -172,7 +174,7 @@ class BaseMMVae(ABC, nn.Module):
                 m_rec = self.lhoods[m_key](*self.decoders[m_key](m_s_embeddings, class_embeddings));
                 results_rec[m_key] = m_rec;
         results['rec'] = results_rec;
-        return results;
+        return results; # TODO: Returns a dictionary containing latents, divergences, and reconstruction parameters or Data?
 
     def encode(self, input_batch):
         latents = dict();
