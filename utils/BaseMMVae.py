@@ -258,6 +258,10 @@ class BaseMMVae(ABC, nn.Module):
 
 
     def generate(self, num_samples=None):
+        """
+        Generates samples from the model by sampling from the joint posterior and the style distributions.
+        Samples random class and style latents to generate new data.
+        """
         if num_samples is None:
             num_samples = self.flags.batch_size;
 
@@ -273,6 +277,9 @@ class BaseMMVae(ABC, nn.Module):
 
 
     def generate_sufficient_statistics_from_latents(self, latents):
+        """
+        Decodes latents to get parameters of the output distributions for each modality.
+        """
         suff_stats = dict();
         content = latents['content']
         for m, m_key in enumerate(self.modalities.keys()):
