@@ -14,39 +14,39 @@ shopt -s nullglob globstar
 # echo "CONDA_PREFIX: $CONDA_PREFIX"
 
 # Dataset generation directory:
-root="/data/backed_up/shared/Data/PolyMNIST"
-data_DIR="${root}/quadrants_4x_64x64_scl1/Mar19_2025_t0"
-DATADIR="${data_DIR}/PolyMNIST"
+root="/data/backed_up/shared/Data/MoPoE"
+data_DIR="${root}"
+DATADIR="${data_DIR}/PolyMNIST/MMNIST"
 PATH_INC_V3="$root/pt_inception-2015-12-05-6726825d.pth"
 
 # Classifier dir:
-clf_digit_path="${data_DIR}/clfs_digit/t1_bs512_ep30/DigitClassifier"
+clf_digit_path="${data_DIR}/trained_classifiers"
 
 METHOD="joint_elbo"  # NOTE: valid options are "joint_elbo", "poe", and "moe"
 LIKELIHOOD="laplace"
 
-BATCH=128    # default: 256, debug: 32 or 64 if without enough memory
-EPOCHS=150  # default: 1300
+BATCH=256    # default: 256, debug: 32 or 64 if without enough memory
+EPOCHS=300  # default: 300
 beta=2.5  # Original 2.5
-learning_rate=1e-5 # Original 0.0005
+learning_rate=0.0005 # Original 0.0005
 # SEED=2
 
-dim_shared=160  # default: 512
+dim_shared=512  # default: 512
 dim_private=0  # default: 0
 
 date=`echo $(date '+%m-%d')`
 number=0
-gpuid=2
-note="MoPoE_QuadPolyMNIST" # usemean and usePost are true by default
+gpuid=3
+note="origMoPoE_PolyMNIST" # usemean and usePost are true by default
 # test_epoch=5
 
-DIR_EXPERIMENT="${date}_${number}_${note}/runs/tmp"  # $PWD, NOTE: experiment logs are written here
+DIR_EXPERIMENT="outputs/${date}_${number}_${note}/runs/tmp"  # $PWD, NOTE: experiment logs are written here
 
 DIR_FID="$DIR_EXPERIMENT/FID"
 
 CUDA_VISIBLE_DEVICES=${gpuid}  python main_mmnist.py \
             --unimodal-datapaths-train "$DATADIR/train/m"{0..4} \
-            --unimodal-datapaths-test "$DATADIR/val/m"{0..4} \
+            --unimodal-datapaths-test "$DATADIR/test/m"{0..4} \
             --pretrained-classifier-paths "$clf_digit_path/trained_clfs_polyMNIST/pretrained_img_to_digit_clf_m"{0..4} \
             --dir_experiment="$DIR_EXPERIMENT" \
             --inception_state_dict="$PATH_INC_V3" \

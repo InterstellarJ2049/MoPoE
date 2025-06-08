@@ -6,6 +6,23 @@ __pycache__/
 # C extensions
 *.so
 
+# virtual environment
+vcca_env/ 
+/venv
+
+# data files
+data/
+/data/
+/dataset/
+mnist_data/
+
+/wandb/
+wandb/
+
+# outputs
+/outputs/
+outputs/
+
 # Distribution / packaging
 .Python
 build/
@@ -127,3 +144,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+06-07_0_MoPoE_QuadPolyMNIST/
