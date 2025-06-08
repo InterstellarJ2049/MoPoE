@@ -1,3 +1,4 @@
+# FID and PRD score calculation for generative models
 import os
 
 import numpy as np

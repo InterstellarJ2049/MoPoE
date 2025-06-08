@@ -80,6 +80,7 @@ def calc_style_kld(exp, klds):
 
 
 def basic_routine_epoch(exp, batch):
+    """Core Logic for MoPoE"""
     # set up weights
     beta_style = exp.flags.beta_style;
     beta_content = exp.flags.beta_content;
