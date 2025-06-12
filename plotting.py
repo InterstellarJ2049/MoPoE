@@ -13,10 +13,12 @@ from utils import plot
 
 def generate_plots(exp, epoch):
     plots = dict();
-    if exp.flags.factorized_representation:
-        # mnist to mnist: swapping content and style intra modal
-        swapping_figs = generate_swapping_plot(exp, epoch)
-        plots['swapping'] = swapping_figs;
+
+    # # ===Disable temporarily due to KeyError: 'm1'===
+    # if exp.flags.factorized_representation:
+    #     # mnist to mnist: swapping content and style intra modal
+    #     swapping_figs = generate_swapping_plot(exp, epoch)
+    #     plots['swapping'] = swapping_figs;
 
     for k in range(len(exp.modalities.keys())):
         cond_k = generate_conditional_fig_M(exp, epoch, k+1)
