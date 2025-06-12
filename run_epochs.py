@@ -152,7 +152,7 @@ def train(epoch, exp, tb_logger):
 
     d_loader = DataLoader(exp.dataset_train, batch_size=exp.flags.batch_size,
                           shuffle=True,
-                          num_workers=8, drop_last=True);
+                          num_workers=16, drop_last=True); # Original MoPoE uses 8 workers
 
     for iteration, batch in enumerate(d_loader):
         basic_routine = basic_routine_epoch(exp, batch);
@@ -181,7 +181,7 @@ def test(epoch, exp, tb_logger):
 
         d_loader = DataLoader(exp.dataset_test, batch_size=exp.flags.batch_size,
                             shuffle=True,
-                            num_workers=8, drop_last=True);
+                            num_workers=16, drop_last=True);
 
         for iteration, batch in enumerate(d_loader):
             basic_routine = basic_routine_epoch(exp, batch);
