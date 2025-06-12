@@ -34,7 +34,7 @@ clf_digit_path="${data_DIR}/trained_classifiers"
 METHOD="joint_elbo"  # NOTE: valid options are "joint_elbo", "poe", and "moe"
 LIKELIHOOD="laplace"
 
-BATCH=512    # default: 256, debug: 32 or 64 if without enough memory
+BATCH=1024    # default: 256, debug: 32 or 64 if without enough memory
 EPOCHS=100  # default: 300
 beta=2.5  # Original 2.5
 learning_rate=0.0005 # Original 0.0005
@@ -47,9 +47,9 @@ dim_shared=32  # default: 512
 dim_private=128  # default: 0
 
 date=`echo $(date '+%m-%d')`
-number=0
+number=1
 gpuid=2
-note="debug_128_32_origMoPoE_PolyMNIST" # usemean and usePost are true by default
+note="B1024_128_32_MoPoE_PolyMNIST" # usemean and usePost are true by default
 # test_epoch=5
 
 DIR_EXPERIMENT="outputs/${date}_${number}_${note}/runs/tmp"  # $PWD, NOTE: experiment logs are written here
