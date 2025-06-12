@@ -224,10 +224,13 @@ def run_epochs(exp):
     for epoch in range(exp.flags.start_epoch, exp.flags.end_epoch):
         utils.printProgressBar(epoch, exp.flags.end_epoch)
         # one epoch of training and testing
-        train(epoch, exp, tb_logger);
-        test(epoch, exp, tb_logger);
+        train(epoch, exp, tb_logger)
+
+        test_epoch = 10
+        if (epoch + 1) % test_epoch == 0:
+            test(epoch, exp, tb_logger)
         # save checkpoints after every 5 epochs
-        if (epoch + 1) % 5 == 0 or (epoch + 1) == exp.flags.end_epoch:
+        if (epoch + 1) % test_epoch == 0 or (epoch + 1) == exp.flags.end_epoch:
             dir_network_epoch = os.path.join(exp.flags.dir_checkpoints, str(epoch).zfill(4));
             if not os.path.exists(dir_network_epoch):
                 os.makedirs(dir_network_epoch);
